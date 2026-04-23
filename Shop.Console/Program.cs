@@ -65,13 +65,18 @@ namespace Shop.ConsoleApp
                     options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
                 });
 
+                AddPersistentServices(services);
+            });
+
+            return host.Build();
+        }
+
+        private static void AddPersistentServices(IServiceCollection services)
+        {
                 services.AddScoped<IProductRepository, ProductRepository>();
                 services.AddScoped<IBasketRepository, BasketRepository>();
                 services.AddScoped<IBasketService, BasketService>();
                 services.AddScoped<IProductService, ProductService>();
-            });
-
-            return host.Build();
         }
 
     }
