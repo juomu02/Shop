@@ -34,9 +34,9 @@ namespace Shop.ConsoleApp
 
                 Console.WriteLine($"id: {product.Id}; name: {product.Name}");
 
-                //Uzdaviniai 1-5 test
+                //Uzdaviniai 1-7 test
                 var userId = 1;
-                var basketService = serviceProvider.GetRequiredService<IBasketRepository>();
+                var basketService = serviceProvider.GetRequiredService<IBasketService>();
                 basketService.Add(userId, product.Id, 5);
                 basketService.Add(userId, product.Id, 9);
                 basketService.Add(userId, 1, 1);
@@ -67,6 +67,7 @@ namespace Shop.ConsoleApp
 
                 services.AddScoped<IProductRepository, ProductRepository>();
                 services.AddScoped<IBasketRepository, BasketRepository>();
+                services.AddScoped<IBasketService, BasketService>();
                 services.AddScoped<IProductService, ProductService>();
             });
 
