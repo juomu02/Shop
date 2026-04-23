@@ -1,75 +1,103 @@
+using System.Data.Common;
+using Shop.Data;
 using Shop.Entities;
 
 namespace Shop.Repositories
 {
     public class BasketRepository : IBasketRepository
     {
-        private Dictionary<int, Basket> Baskets = new Dictionary<int, Basket>();
+        private readonly ShopDbContext dbContext;
+
+        public BasketRepository(ShopDbContext dbContext)
+        {
+            this.dbContext = dbContext;
+        }
+
 
         public int Add(int userId, int productId, int count)
         {
             var basket = GetInstance(userId);
-            AddBasketItem(basket, productId, count);
+            AddBasketItem(basket.Id, productId, count);
             return basket.Id;
         }
 
         public void Remove(int userId, int productId, int count)
         {
             var basket = GetInstance(userId);
-            RemoveBasketItem(basket, productId, count);
+            RemoveBasketItem(basket.Id, productId, count);
         }
 
         public void RemoveAll(int userId, int productId)
         {
             var basket = GetInstance(userId);
-            var product = basket.Products.Find(o => o.ProductId == productId);
-            basket.Products.Remove(product);
+            var product = dbContext.ProductInBaskets
+                .FirstOrDefault(o => o.ProductId == productId && o.BasketId == basket.Id);
+            dbContext.ProductInBaskets.Remove(product);
+            dbContext.SaveChanges();
         }
 
         public Basket Get(int userId)
         {
-            return Baskets[userId];
+            return dbContext.Baskets.SingleOrDefault(o => o.UserId == userId);
         }
 
         private Basket GetInstance(int userId)
         {
-            Baskets.TryGetValue(userId, out Basket basket);
+            var basket = dbContext.Baskets.SingleOrDefault(o => o.UserId == userId);
             if (basket != null) return basket;
 
-            var maxId = Baskets.Keys.Any() ? Baskets.Keys.Max() : 0;
-            var newId = maxId + 1;
             var newBasket = new Basket()
             {
                 UserId = userId,
-                Id = newId,
-                Products = new List<ProductInBasket> { }
+                ProductInBaskets = new List<ProductInBasket> { }
             };
-            Baskets.Add(userId, newBasket);
-            return newBasket;
+
+            var entityEntry = dbContext.Baskets.Add(newBasket);
+
+            dbContext.SaveChanges();
+
+            return entityEntry.Entity;
         }
 
-        private void AddBasketItem(Basket basket, int productId, int count)
+        private void AddBasketItem(int basketId, int productId, int count)
         {
-            var product = basket.Products.Find(o => o.ProductId == productId);
-            if (product != null) product.Count += count;
+            var product = dbContext.ProductInBaskets
+                .FirstOrDefault(o => o.ProductId == productId && o.BasketId == basketId);
+            if (product != null)
+            {
+                product.Count += count;
+                dbContext.ProductInBaskets.Update(product);
+                dbContext.SaveChanges();
+            }
 
             else
             {
                 var newProduct = new ProductInBasket
                 {
-                    BasketId = basket.Id,
+                    BasketId = basketId,
                     ProductId = productId,
                     Count = count
                 };
-                basket.Products.Add(newProduct);
+                dbContext.ProductInBaskets.Add(newProduct);
+                dbContext.SaveChanges();
             }
         }
 
-        private void RemoveBasketItem(Basket basket, int productId, int count)
+        private void RemoveBasketItem(int basketId, int productId, int count)
         {
-            var product = basket.Products.Find(o => o.ProductId == productId);
-            if (product.Count > count) product.Count -= count;
-            else basket.Products.Remove(product);
+            var product = dbContext.ProductInBaskets
+                .FirstOrDefault(o => o.ProductId == productId && o.BasketId == basketId);
+            if (product != null && product.Count > count)
+            {
+                product.Count -= count;
+                dbContext.ProductInBaskets.Update(product);
+                dbContext.SaveChanges();
+            }
+            else
+            {
+                dbContext.ProductInBaskets.Remove(product);
+                dbContext.SaveChanges();
+            }
         }
     }
 }

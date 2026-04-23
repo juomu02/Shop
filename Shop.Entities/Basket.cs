@@ -4,6 +4,6 @@ namespace Shop.Entities
     {
         public int Id { get; set; }
         public int UserId { get; set; }
-        public List<ProductInBasket> Products { get; set; }
+        public ICollection<ProductInBasket> ProductInBaskets { get; set;} 
     }
 }
