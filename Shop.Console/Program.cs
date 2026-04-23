@@ -47,9 +47,10 @@ namespace Shop.ConsoleApp
                 basketService.Add(userId, 2, 5);
 
                 var userBasket = basketService.Get(userId);
-                for (int productIndex = 0; productIndex < userBasket.Products.Count; productIndex++)
+                var userBasketList = userBasket.ProductInBaskets.ToList();
+                for (int productIndex = 0; productIndex < userBasket.ProductInBaskets.Count; productIndex++)
                 {
-                    Console.WriteLine($"User {userId} has item {userBasket.Products[productIndex].ProductId} with count {userBasket.Products[productIndex].Count}");
+                    Console.WriteLine($"User {userId} has item {userBasketList[productIndex].ProductId} with count {userBasketList[productIndex].Count}");
                 }
             }
         }
