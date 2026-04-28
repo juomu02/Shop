@@ -12,7 +12,7 @@ namespace Shop.Services
             this.userRepository = userRepository;
         }
 
-        public int Add(string userName, string password)
+        public int? Add(string userName, string password)
         {
             return userRepository.Add(userName, password);
         }
@@ -20,10 +20,21 @@ namespace Shop.Services
         public User Get(string userName)
         {
             return userRepository.Get(userName);
-        }
-        public bool CheckPassword(string userName, string passwordToCheck)
+        } public User Get(int userId)
         {
-            return userRepository.CheckPassword(userName, passwordToCheck);
+            return userRepository.Get(userId);
+        }
+        public bool CheckPassword(int userId, string passwordToCheck)
+        {
+            return userRepository.CheckPassword(userId, passwordToCheck);
+        }
+        public void ChangePassword(int userId, string newPassword)
+        {
+            userRepository.ChangePassword(userId, newPassword);
+        }
+        public void Remove(int userId)
+        {
+            userRepository.Remove(userId);
         }
     }
 }

@@ -13,8 +13,12 @@ namespace Shop.Repositories
         {
             this.dbContext = dbContext;
         }
-        public int Add(string userName, string password)
+        public int? Add(string userName, string password)
         {
+            var usernameAvailable = dbContext.Users
+                .SingleOrDefault(o => o.UserName == userName);
+            if (usernameAvailable != null)
+                return null; //Ar čia geras variantas išvengti userių kūrimo tuo pačiu name?
 
             var user = CreateUser(userName, password);
             var entityEntry = dbContext.Users.Add(user);
@@ -27,9 +31,13 @@ namespace Shop.Repositories
         {
             return dbContext.Users.SingleOrDefault(o => o.UserName == userName);
         }
-        public bool CheckPassword(string userName, string passwordToCheck)
+        public User Get(int userId)
         {
-            var user = Get(userName);
+            return dbContext.Users.SingleOrDefault(o => o.Id == userId);
+        }
+        public bool CheckPassword(int userId, string passwordToCheck)
+        {
+            var user = Get(userId);
             var enteredPwd = EncryptString(passwordToCheck);
             for (int index = 0; index < enteredPwd.Length; index++)
             {
@@ -37,6 +45,19 @@ namespace Shop.Repositories
                     return false;
             }
             return true;
+        }
+        public void ChangePassword(int userId, string newPassword)
+        {
+            var user = Get(userId);
+            user.Password = EncryptString(newPassword);
+            dbContext.Users.Update(user);
+            dbContext.SaveChanges();
+        }
+        public void Remove(int userId)
+        {
+            var user = Get(userId);
+            dbContext.Users.Remove(user);
+            dbContext.SaveChanges();
         }
         private User CreateUser(string userName, string password)
         {
