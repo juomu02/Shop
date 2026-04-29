@@ -48,7 +48,11 @@ namespace Shop.Data
 
             modelBuilder.Entity<User>(o =>
             {
-                o.HasKey(e => e.Id);
+                o.HasKey(e => new {e.Id, e.UserName}); //Radau kelis variantus
+                    //kaip db stulpeliui suteikti unikalią reikšmę, tai .HasKey(),
+                    //.IsUnique(), ir rodos dar trečias buvo. Ar kažkuris šitu atvėju
+                    //yra geresnis? O gal nebūtina apskritai dėti unique, jei User.Add()
+                    //metode tikrinama ar jau toks use name egzistuoja?
                 o.Property(e => e.Password).IsRequired();
             });
         }

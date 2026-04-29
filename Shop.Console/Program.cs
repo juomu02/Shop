@@ -53,13 +53,12 @@ namespace Shop.ConsoleApp
                 //     Console.WriteLine($"User {userId} has item {userBasketList[productIndex].ProductId} with count {userBasketList[productIndex].Count}");
                 // }
                 var userService = serviceProvider.GetRequiredService<IUserService>();
-                var newUserName = "Tomas";
+                var newUserName = "Ignas";
                 var newUserPwd = "215as-fg2*";
 
 
                 var getUser = userService.Get(newUserName);
-                userService.Remove(getUser.Id);
-
+                if (getUser != null) userService.Remove(getUser.Id);
 
                 var newUserId = userService.Add(newUserName, newUserPwd);
                 Console.WriteLine($"Sukurtas naujas useris su id: {newUserId}");
@@ -71,11 +70,11 @@ namespace Shop.ConsoleApp
                 var wrongPwdCheck = userService.CheckPassword(getUser.Id, wrongPassword);
                 Console.WriteLine($"Blogo password check:{wrongPwdCheck}");
 
-
                 var correctPwdCheck = userService.CheckPassword(getUser.Id, newUserPwd);
                 Console.WriteLine($"Gero password check:{correctPwdCheck}");
 
-                userService.ChangePassword(getUser.Id ,wrongPassword);
+                userService.ChangePassword(getUser.Id, wrongPassword);
+
                 var changedPwdCheck = userService.CheckPassword(getUser.Id, wrongPassword);
                 Console.WriteLine($"Pakeisto password check:{changedPwdCheck}");
 
