@@ -9,6 +9,8 @@ namespace Shop.Data
         public DbSet<Basket> Baskets { get; set; }
         public DbSet<ProductInBasket> ProductInBaskets { get; set; }
         public DbSet<User> Users { get; set; }
+        public DbSet<Order> Orders { get; set; }
+        public DbSet<ProductInOrder> ProductInOrders { get; set; }
 
         public ShopDbContext(DbContextOptions<ShopDbContext> options) : base(options)
         {
@@ -32,8 +34,8 @@ namespace Shop.Data
                 o.Property(e => e.UserId).IsRequired();
                 o.HasMany(e => e.ProductInBaskets)
                     .WithOne(e => e.Basket)
-                    .HasForeignKey(e => e.BasketId).
-                    IsRequired();
+                    .HasForeignKey(e => e.BasketId)
+                    .IsRequired();
             });
 
             modelBuilder.Entity<ProductInBasket>(o =>
@@ -48,12 +50,28 @@ namespace Shop.Data
 
             modelBuilder.Entity<User>(o =>
             {
-                o.HasKey(e => new {e.Id, e.UserName}); //Radau kelis variantus
-                    //kaip db stulpeliui suteikti unikalią reikšmę, tai .HasKey(),
-                    //.IsUnique(), ir rodos dar trečias buvo. Ar kažkuris šitu atvėju
-                    //yra geresnis? O gal nebūtina apskritai dėti unique, jei User.Add()
-                    //metode tikrinama ar jau toks use name egzistuoja?
+                o.HasKey(e => new { e.Id, e.UserName });
                 o.Property(e => e.Password).IsRequired();
+            });
+
+            modelBuilder.Entity<Order>(o =>
+            {
+                o.HasKey(e => e.Id);
+                o.Property(e => e.UserId).IsRequired();
+                o.HasMany(e => e.ProductInOrders)
+                    .WithOne(e => e.Order)
+                    .HasForeignKey(e => e.OrderId)
+                    .IsRequired();
+            });
+
+            modelBuilder.Entity<ProductInOrder>(o =>
+            {
+                o.HasKey(e => e.Id);
+                o.HasOne(e => e.Product)
+                    .WithMany(e => e.ProductInOrders)
+                    .HasForeignKey(e => e.ProductId);
+                o.Property(e => e.ProductId).IsRequired();
+                o.Property(e => e.Count).IsRequired();
             });
         }
     }

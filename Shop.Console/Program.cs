@@ -22,37 +22,9 @@ namespace Shop.ConsoleApp
                 var dbContext = serviceProvider.GetRequiredService<ShopDbContext>();
                 dbContext.Database.Migrate();
 
-                // var productService = serviceProvider.GetRequiredService<IProductService>();
-
-                // var id = productService.Add(new Product()
-                // {
-                //     Name = "Book2",
-                //     Price = 2.99M
-                // });
-
-                // var product = productService.Get(id);
-
-                // Console.WriteLine($"id: {product.Id}; name: {product.Name}");
-
-                // //Uzdaviniai 1-7 test
-                // var userId = 1;
-                // var basketService = serviceProvider.GetRequiredService<IBasketService>();
-                // basketService.Add(userId, product.Id, 5);
-                // basketService.Add(userId, product.Id, 9);
-                // basketService.Add(userId, 1, 1);
-                // basketService.Add(userId, 1, 1);
-                // basketService.Remove(userId, 1, 1);
-                // basketService.Add(userId, 2, 3);
-                // basketService.RemoveAll(userId, 2);
-                // basketService.Add(userId, 2, 5);
-
-                // var userBasket = basketService.Get(userId);
-                // var userBasketList = userBasket.ProductInBaskets.ToList();
-                // for (int productIndex = 0; productIndex < userBasket.ProductInBaskets.Count; productIndex++)
-                // {
-                //     Console.WriteLine($"User {userId} has item {userBasketList[productIndex].ProductId} with count {userBasketList[productIndex].Count}");
-                // }
+                // paskaitos #21 uždavinių test
                 var userService = serviceProvider.GetRequiredService<IUserService>();
+
                 var newUserName = "Ignas";
                 var newUserPwd = "215as-fg2*";
 
@@ -77,6 +49,52 @@ namespace Shop.ConsoleApp
 
                 var changedPwdCheck = userService.CheckPassword(getUser.Id, wrongPassword);
                 Console.WriteLine($"Pakeisto password check:{changedPwdCheck}");
+
+
+                // IProductService test
+                var productService = serviceProvider.GetRequiredService<IProductService>();
+
+                var id = productService.Add(new Product()
+                {
+                    Name = "T-Shirt",
+                    Price = 12.99M
+                });
+
+                var product = productService.Get(id);
+
+                Console.WriteLine($"id: {product.Id}; name: {product.Name}");
+
+
+                // paskaitos #18 uždavinių test
+                var userId = newUserId != null ? (int)newUserId : 1;
+
+                var basketService = serviceProvider.GetRequiredService<IBasketService>();
+                basketService.Add(userId, product.Id, 5);
+                basketService.Add(userId, product.Id, 9);
+                basketService.Add(userId, 1, 1);
+                basketService.Add(userId, 1, 1);
+                basketService.Remove(userId, 1, 1);
+                basketService.Add(userId, 2, 3);
+                basketService.RemoveAll(userId, 2);
+                basketService.Add(userId, 2, 5);
+
+                var userBasket = basketService.Get(userId);
+                var userBasketList = userBasket.ProductInBaskets.ToList();
+                // for (int productIndex = 0; productIndex < userBasket.ProductInBaskets.Count; productIndex++)
+                // {
+                //     Console.WriteLine($"User {userId} has item {userBasketList[productIndex].ProductId} with count {userBasketList[productIndex].Count}");
+                // }
+
+                // paskaitos #22 uždavinių test
+                var orderService = serviceProvider.GetRequiredService<IOrderService>();
+                var newOrderId = orderService.Add(userBasket);
+                var newOrder = orderService.Get(newOrderId);
+                orderService.ChangeStatus(newOrder.Id, (Order.IsPaid)2);
+                var orderItemsList = newOrder.ProductInOrders.ToList();
+                for (int productIndex = 0; productIndex < newOrder.ProductInOrders.Count; productIndex++)
+                {
+                    Console.WriteLine($"User {userId} has item {orderItemsList[productIndex].ProductId} with count {orderItemsList[productIndex].Count}");
+                }
 
             }
         }
@@ -106,6 +124,8 @@ namespace Shop.ConsoleApp
             services.AddScoped<IProductService, ProductService>();
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<IOrderRepository, OrderRepository>();
+            services.AddScoped<IOrderService, OrderService>();
         }
 
     }

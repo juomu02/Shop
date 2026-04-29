@@ -7,5 +7,6 @@ namespace Shop.Entities
         public decimal Price { get; set; }
         public int CountInStock { get; set; }
         public ICollection<ProductInBasket> ProductInBaskets {get; set;}
+        public ICollection<ProductInOrder> ProductInOrders {get; set;}
     }
 }
