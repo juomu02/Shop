@@ -59,6 +59,10 @@ namespace Shop.Repositories
             dbContext.Users.Remove(user);
             dbContext.SaveChanges();
         }
+        public List<User> GetAll()
+        {
+            return dbContext.Users.ToList(); ;
+        }
         private User CreateUser(string userName, string password)
         {
             return new User

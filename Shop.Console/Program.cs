@@ -46,6 +46,7 @@ namespace Shop.ConsoleApp
                 Console.WriteLine($"Gero password check:{correctPwdCheck}");
 
                 userService.ChangePassword(getUser.Id, wrongPassword);
+                userService.GetAll();
 
                 var changedPwdCheck = userService.CheckPassword(getUser.Id, wrongPassword);
                 Console.WriteLine($"Pakeisto password check:{changedPwdCheck}");

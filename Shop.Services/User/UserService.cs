@@ -36,5 +36,11 @@ namespace Shop.Services
         {
             userRepository.Remove(userId);
         }
+
+
+        public List<User> GetAll()
+        {
+            return userRepository.GetAll();
+        }
     }
 }

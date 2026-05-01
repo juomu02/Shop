@@ -1,6 +1,6 @@
 using Shop.Entities;
 
-namespace Shop.Repositories
+namespace Shop.Services
 {
     public interface IUserService
     {
@@ -9,6 +9,7 @@ namespace Shop.Repositories
         bool CheckPassword(int userId, string passwordToCheck);
         void ChangePassword(int userId, string newPassword);
         void Remove(int userId);
+        List<User> GetAll();
 
     }
 }
